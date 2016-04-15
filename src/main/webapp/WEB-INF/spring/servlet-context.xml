@@ -1,0 +1,45 @@
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"	
+	xmlns:beans="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+ 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	 <annotation-driven>	 
+		<message-converters>
+	        <beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>	          
+	    </message-converters>	 	    
+	 </annotation-driven>
+	<context:component-scan base-package="com.github.zesetup.dojospringbillet" />
+	
+	
+	<!-- Hibernate JPA HSQLDB -->
+    
+    <beans:bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<beans:property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+		<beans:property name="persistenceUnitName" value="hsqldb" />
+		<beans:property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<beans:property name="jpaDialect" ref="jpaDialect" />
+	</beans:bean>
+		 
+		<beans:bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+			<beans:property name="database" value="HSQL" />
+			<beans:property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />
+		</beans:bean>
+		<beans:bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+			<beans:property name="entityManagerFactory" ref="entityManagerFactory" />
+			<beans:property name="jpaDialect" ref="jpaDialect" />
+		</beans:bean>
+	
+		<beans:bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />		   
+		<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+ </beans:beans>
