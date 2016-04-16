@@ -1,3 +1,5 @@
 # dojo-spring-billet
 
-Hello
+Build package:
+
+mvn -Pmobile package
