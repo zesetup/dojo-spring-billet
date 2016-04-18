@@ -11,7 +11,7 @@
 	</appender>
 	
 	<!-- Application Loggers -->
-	<logger name="com.github.zesetup.dojo-spring-billet">
+	<logger name="com.github.zesetup.dojospringbillet">
 		<level value="info" />
 	</logger>
 	

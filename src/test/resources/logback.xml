@@ -13,7 +13,7 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 	
-	<logger name="com.github.zesetup.dojo-spring-billet" level="info" additivity="false">
+	<logger name="com.github.zesetup.dojospringbillet" level="info" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 	 
