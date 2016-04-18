@@ -12,5 +12,12 @@
 2. cd dojo-spring-billet
 3. mvn eclipse:eclipse
 4. From Eclipse IDE
-4.1 File -> Import -> Existing projects into workplace
-4.2 Project -> Configure -> Convert to Maven Project
+4. File -> Import -> Existing projects into workplace
+5. Project -> Configure -> Convert to Maven Project
+
+## Access from Web-browser
+
+Test REST GET from service:
+
+http://%your_server_host%/dojo-spring-billet/employee
+
