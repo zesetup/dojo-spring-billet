@@ -1,5 +1,7 @@
 # dojo-spring-billet
 
-Build package:
+## Create package 
 
-mvn -Pmobile package
+1. git clone https://github.com/zesetup/dojo-spring-billet.git
+2. mvn package
+
