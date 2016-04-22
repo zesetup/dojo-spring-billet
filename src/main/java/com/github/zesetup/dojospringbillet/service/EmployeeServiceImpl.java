@@ -29,7 +29,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Override
 	public List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch) {
 		List<Employee> l =  employeeDao.load(sortField, recordsOffset, recordsLimit,  fullSearch);
-		System.out.println("employee service load()");
 		return l;
 	}
 
