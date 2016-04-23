@@ -60,7 +60,7 @@ public class Employee {
 	}
 
 	public String getLogin() {
-		return login;
+		return login+"";
 	}
 
 	public String getName() {

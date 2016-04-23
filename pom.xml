@@ -133,7 +133,7 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.6.3</version>
 		</dependency>
-	</dependencies>
+ 	</dependencies>
 	<build>
 		<finalName>dojo-spring-billet</finalName>
 		<plugins>

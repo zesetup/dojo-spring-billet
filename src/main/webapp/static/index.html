@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Spring + Dojo</title>
+</head>
+<style type="text/css">
+        /*Use claro theme.*/
+        @import "static/js/dijit/themes/claro/claro.css";
+        @import "static/js/dijit/themes/claro/document.css";
+        /*Import the main CSS file of Gridx.*/
+        @import "static/js/gridx/resources/claro/Gridx.css";
+    </style>
+<script src="static/js/dojo/dojo.js"  data-dojo-config="async: true"></script>
+<body class='claro'>
+Employee REST service<br/>
+GET <a href="employee">/employee</a>
+<div id="employeeGrid"></div>
+</body>
+<script>
+	require([
+	'dojo/dom',
+	'dojo/dom-construct',
+	'dojo/ready',
+	'dojo/store/JsonRest',  
+	'gridx/Grid',
+	'gridx/allModules'
+	], function (dom, domConstruct, ready, JsonRest, Gridx, gridxAllModules) {
+	
+	var addEmployeeButton = new dijit.form.Button({
+			label: "Add New",
+			iconClass: "dijitIconNewTask",
+			showLabel: true,
+			onClick: function(){				
+				dijit.registry.byId("employeeForm_id").set("value", null)
+				addEmployeeDialog.show()
+			}
+		})
+		
+	var addEmployeeDialog= new dijit.Dialog({
+			title: "Employee",
+			content: "",
+			style:"width:350px;background:white"
+		});
+	ready(function(){
+		employeeListGrid.placeAt("employeeGrid")
+		employeeListGrid.startup()
+	})
+	var employeeListGrid = new Gridx({        	 
+			id: 'employeesListGrid',
+			cacheClass: "gridx/core/model/cache/Async",
+			store:new JsonRest({target:"employee",sortParam:"sort"}),
+			filterServerMode: true,
+			filterSetupQuery: function(expr){
+				try{
+					return "?fullSearch="+expr.data[1].data[1].data
+				} catch(e){
+					return ""
+				}                 
+			},
+			query: {},
+			pageSize: 10,
+			autoHeight: true,
+			autoWidth: true,
+			structure: [                                            	     						
+			            {id:1, 'field': 'name', 'name': 'Name', width:'120px'}		            
+			            ,{id:2,'field': 'surname', 'name': 'Surname',  width:'120px'}
+			            ,{id:3,'field': 'login', 'name': 'Login',  width:'100px'}
+			            ,{id:4,'field': 'position', 'name': 'Position',  width:'300px'}
+			            ,{id:5,'field': 'id', 'name': 'Actions', width:"180px", widgetsInCell: true,  'sortable':false,  width:'100px'
+			            	,decorator: function(){
+			            		return "<button data-dojo-type='dijit.form.Button' data-dojo-attach-point='editButton'" +
+			            		"data-dojo-props=\"iconClass:'commonIcons dijitIconEdit' , showLabel: false\" ></button>" +
+			            		"<button data-dojo-type='dijit.form.Button' data-dojo-attach-point='deleteButton'" +
+			            		"data-dojo-props=\"iconClass:'commonIcons dijitIconDelete' , showLabel: false\" ></button>";
+			            	},
+			            	onCellWidgetCreated: function(cellWidget, column){		            			  		            		
+			            	},
+			            	setCellValue: function(gridData, storeData, cellWidget){    	
+			            		cellWidget.editButton.onClick = function(){
+			            			fillForm(gridData)
+			            		},
+			            		cellWidget.deleteButton.onClick = function(){
+			            			var confirmDialog = new ConfirmDialog({
+			            		        title: "Confirm Delete ",
+			            		        content: "Sure?",
+			            		        style: "width: 300px"
+			            		    });
+			            			confirmDialog.show()
+			            			confirmDialog.on("execute", function(){
+				            			employeesListGrid.store.remove(gridData).then(
+				            				function(serviceAnswer){
+				            					Tooltip.show("Deleted", dom.byId('helper'))	
+				            			}, function(err){
+				            				addEmployeeDialog.hide()
+				            				Tooltip.show("Server error!", dom.byId('helper'))
+				            			})
+			            			})
+			            		}
+			            		var rowIndex = cellWidget.cell.row.data();			            		
+			            	}
+			            }
+			            ],
+			            modules: [
+			                      { moduleClass : gridxAllModules.SingleSort, serverMode : true},
+			                      gridxAllModules.Pagination,
+			                      "gridx/modules/Bar",
+			                      "gridx/modules/Filter",
+			                      "gridx/modules/filter/QuickFilter",
+			                      "gridx/modules/CellWidget"
+			                      ],
+			                      barBottom: [
+			                                  {pluginClass: "gridx/support/LinkSizer", style: 'text-align: left;'},
+			                                  {pluginClass: "gridx/support/LinkPager", style: 'text-align: right;'},		                                  
+			                                  ],
+			                                  barTop:[addEmployeeButton]
+
+		})
+	
+	}, "employeeGrid");
+</script>
+</html>

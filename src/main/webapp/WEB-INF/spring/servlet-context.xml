@@ -20,8 +20,10 @@
 	    </message-converters>	 	    
 	 </annotation-driven>
 	<context:component-scan base-package="com.github.zesetup.dojospringbillet" />
-	
-	
+		
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/static/**" location="/static/" />
+	<view-controller path="/" view-name="/static/index.html"/>
 	<!-- Hibernate JPA HSQLDB -->
     
     <beans:bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
