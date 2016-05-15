@@ -1,0 +1,32 @@
+<div> 
+	<div data-dojo-type="dijit/form/Form" id="employeeForm" name="employeeForm" data-dojo-id="employeeForm" 
+	encType="multipart/form-data" action="" method="" style="width: 400px">
+		<fieldset style="margin-left: 5px; width:; border: 0">
+			<ol>
+				<li><label class="field" for="employeeForm_name">Имя</label>
+					<input type="text" id="employeeForm_name" name="employeeForm_name" 
+					data-dojo-type="dijit/form/ValidationTextBox" required="true"
+					data-dojo-props="regExp: '(^[-0-9a-zA-Zа-яА-Я]{2,16}$)', invalidMessage:'Please enter 2-16 value.'"/>
+				</li>			
+				<li><label class="field" for="addLocationForm_surname">Фамилия:</label>
+					<input type="text" id="employeeForm_surname" name="employeeForm_surname" required="true" 
+					data-dojo-type="dijit/form/ValidationTextBox"
+					data-dojo-props="regExp: '(^[-0-9a-zA-Zа-яА-Я]{2,16}$)', invalidMessage:'Please enter 2-16 value.'"/>
+				</li>
+				<li><label class="field" for="addLocationForm_position">Должность:</label>
+					<input type="text" id="employeeForm_position" name="employeeForm_position" required="true" 
+					data-dojo-type="dijit/form/ValidationTextBox"
+					data-dojo-props="regExp: '(^[-0-9a-zA-Zа-яА-Я\ ]{2,64}$)', invalidMessage:'Please enter 2-64 value.'"/>
+				</li>
+				<li><label class="field" for="addLocationForm_login">Учетная запись:</label>
+					<input type="text" id="employeeForm_login" name="employeeForm_login" required="false" 
+					data-dojo-type="dijit/form/ValidationTextBox"
+					data-dojo-props="regExp: '(^[-0-9a-zA-Z]{0,16}$)', invalidMessage:'Please enter max 16 value.'"/>
+				</li>
+				<div id="employeeForm_id" name="employeeForm_id" value="" data-dojo-type="dijit.form.TextBox" type="hidden"></div>
+		</fieldset>
+		<fieldset style="text-align: center">
+			<input type="submit" value="Submit" label="OK" id="submitButton" dojoType="dijit/form/Button" />		
+		</fieldset>
+	</div>
+</div>

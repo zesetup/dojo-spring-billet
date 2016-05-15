@@ -5,12 +5,39 @@
 <title>Spring + Dojo</title>
 </head>
 <style type="text/css">
-        /*Use claro theme.*/
-        @import "static/js/dijit/themes/claro/claro.css";
-        @import "static/js/dijit/themes/claro/document.css";
-        /*Import the main CSS file of Gridx.*/
-        @import "static/js/gridx/resources/claro/Gridx.css";
-    </style>
+	/*Use claro theme.*/
+	@import "static/js/dijit/themes/claro/claro.css";
+	@import "static/js/dijit/themes/claro/document.css";
+	/*Import the main CSS file of Gridx.*/
+	@import "static/js/gridx/resources/claro/Gridx.css";
+	<style>
+	fieldset
+	{ 
+		float: left;  
+		clear: both;  
+		margin: 0 0 0 0;  
+		padding: 5;
+		width:200px; 	
+	}
+	fieldset ol
+	{  
+		padding: 0;  
+		list-style: none;	
+		margin-left:2px;
+	}
+
+	label.field
+	{  
+		text-align: right;
+		float: left;
+		margin-right: 3px;
+		width:120px;		
+	}
+	label{
+		vertical-align: middle;
+	}
+	</style>        
+</style>
 <script src="static/js/dojo/dojo.js"  data-dojo-config="async: true"></script>
 <body class='claro'>
 Employee REST service<br/>
@@ -22,11 +49,34 @@ GET <a href="employee">/employee</a>
 	'dojo/dom',
 	'dojo/dom-construct',
 	'dojo/ready',
-	'dojo/store/JsonRest',  
+	'dojo/store/JsonRest', 
+	'dojo/_base/declare',
+	"dojo/on",
+	"dojo/dom-form",
+	"dijit/registry",
+    "dijit/form/Form", 
+    "dijit/form/Button",
+    "dijit/form/ValidationTextBox",
+	"dijit/_WidgetBase",
+    "dijit/_TemplatedMixin",
+    "dijit/_WidgetsInTemplateMixin",
+    "dijit/form/_FormWidget",
+    "dijit/ConfirmDialog",
 	'gridx/Grid',
-	'gridx/allModules'
-	], function (dom, domConstruct, ready, JsonRest, Gridx, gridxAllModules) {
-	
+	'gridx/allModules',
+	"dojo/text!./static/templates/employeeForm.html"
+	], function (dom, domConstruct, ready, JsonRest, declare, on, domForm,  
+			registry, Form, Button, ValidationTextBox, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _FormWidget,ConfirmDialog,   
+			Gridx, gridxAllModules, employeeFormWidgetTemplate) {
+	var employeeStore =	new JsonRest({target:"employee",sortParam:"sort"})
+	declare("employeeForm", [_WidgetBase, _TemplatedMixin,  _WidgetsInTemplateMixin],
+			{
+				id:"employeeFormWidget",
+				name:"employeeFormWidget",
+				templateString: employeeFormWidgetTemplate,
+				widgetsInTemplate: true
+			})
+	var employeeFormWidget = new employeeForm({})
 	var addEmployeeButton = new dijit.form.Button({
 			label: "Add New",
 			iconClass: "dijitIconNewTask",
@@ -41,15 +91,12 @@ GET <a href="employee">/employee</a>
 			title: "Employee",
 			content: "",
 			style:"width:350px;background:white"
-		});
-	ready(function(){
-		employeeListGrid.placeAt("employeeGrid")
-		employeeListGrid.startup()
-	})
+		})
+			
 	var employeeListGrid = new Gridx({        	 
 			id: 'employeesListGrid',
 			cacheClass: "gridx/core/model/cache/Async",
-			store:new JsonRest({target:"employee",sortParam:"sort"}),
+			store: employeeStore,
 			filterServerMode: true,
 			filterSetupQuery: function(expr){
 				try{
@@ -76,9 +123,16 @@ GET <a href="employee">/employee</a>
 			            	},
 			            	onCellWidgetCreated: function(cellWidget, column){		            			  		            		
 			            	},
-			            	setCellValue: function(gridData, storeData, cellWidget){    	
+			            	setCellValue: function(gridData, storeData, cellWidget){    	     		
 			            		cellWidget.editButton.onClick = function(){
-			            			fillForm(gridData)
+			            			employeeStore.get(gridData).then(function(employee){
+			            				registry.byId("employeeForm_id").set("value", employee.id)
+			            				registry.byId("employeeForm_name").set("value", employee.name)
+			            				registry.byId("employeeForm_surname").set("value", employee.surname)
+			            				registry.byId("employeeForm_position").set("value", employee.position)
+			            				registry.byId("employeeForm_login").set("value", employee.login)
+			            				addEmployeeDialog.show()
+			            			})
 			            		},
 			            		cellWidget.deleteButton.onClick = function(){
 			            			var confirmDialog = new ConfirmDialog({
@@ -116,7 +170,30 @@ GET <a href="employee">/employee</a>
 			                                  barTop:[addEmployeeButton]
 
 		})
+	ready(function(){
+		employeeListGrid.placeAt("employeeGrid")
+		employeeListGrid.startup()
+		on(registry.byId("employeeForm_submit"), "click", function(){
+			if(registry.byId("employeeForm").validate()){
+				employee.id=registry.byId("employeeForm_id").get("value")
+				employee.name=registry.byId("employeeForm_name").get("value")
+				employee.surname=registry.byId("employeeForm_surname").get("value")
+				employee.position=registry.byId("employeeForm_position").get("value")
+				employee.login=registry.byId("employeeForm_login").get("value")
+												
+				employeeStore.put(employee).then(function(){
+					alert(1)
+				})
+			}	
+			alert(2)
+			return false
+		})
+	})
+		
+	addEmployeeDialog.addChild(employeeFormWidget)
+})
 	
-	}, "employeeGrid");
+	
+	
 </script>
 </html>
