@@ -82,12 +82,16 @@ GET <a href="employee">/employee</a>
 			iconClass: "dijitIconNewTask",
 			showLabel: true,
 			onClick: function(){				
-				dijit.registry.byId("employeeForm_id").set("value", null)
-				addEmployeeDialog.show()
+				registry.byId("employeeForm_id").set("value", null)
+				registry.byId("employeeForm_name").set("value", null)
+				registry.byId("employeeForm_surname").set("value", null)
+				registry.byId("employeeForm_position").set("value", null)
+				registry.byId("employeeForm_login").set("value", null)
+				createUpdateEmployeeDialog.show()
 			}
 		})
 		
-	var addEmployeeDialog= new dijit.Dialog({
+	var createUpdateEmployeeDialog= new dijit.Dialog({
 			title: "Employee",
 			content: "",
 			style:"width:350px;background:white"
@@ -131,7 +135,7 @@ GET <a href="employee">/employee</a>
 			            				registry.byId("employeeForm_surname").set("value", employee.surname)
 			            				registry.byId("employeeForm_position").set("value", employee.position)
 			            				registry.byId("employeeForm_login").set("value", employee.login)
-			            				addEmployeeDialog.show()
+			            				createUpdateEmployeeDialog.show()
 			            			})
 			            		},
 			            		cellWidget.deleteButton.onClick = function(){
@@ -142,12 +146,12 @@ GET <a href="employee">/employee</a>
 			            		    });
 			            			confirmDialog.show()
 			            			confirmDialog.on("execute", function(){
-				            			employeesListGrid.store.remove(gridData).then(
+				            			employeeStore.remove(gridData).then(
 				            				function(serviceAnswer){
-				            					Tooltip.show("Deleted", dom.byId('helper'))	
+				            					console.log("Deleted")	
 				            			}, function(err){
-				            				addEmployeeDialog.hide()
-				            				Tooltip.show("Server error!", dom.byId('helper'))
+				            				createUpdateEmployeeDialog.hide()
+				            				console.log("Server error!")
 				            			})
 			            			})
 			            		}
@@ -156,13 +160,13 @@ GET <a href="employee">/employee</a>
 			            }
 			            ],
 			            modules: [
-			                      { moduleClass : gridxAllModules.SingleSort, serverMode : true},
-			                      gridxAllModules.Pagination,
-			                      "gridx/modules/Bar",
-			                      "gridx/modules/Filter",
-			                      "gridx/modules/filter/QuickFilter",
-			                      "gridx/modules/CellWidget"
-			                      ],
+									  { moduleClass : gridxAllModules.SingleSort, serverMode : true},
+									  gridxAllModules.Pagination,
+									  "gridx/modules/Bar",
+									  "gridx/modules/Filter",
+									  "gridx/modules/filter/QuickFilter",
+									  "gridx/modules/CellWidget"
+								],
 			                      barBottom: [
 			                                  {pluginClass: "gridx/support/LinkSizer", style: 'text-align: left;'},
 			                                  {pluginClass: "gridx/support/LinkPager", style: 'text-align: right;'},		                                  
@@ -173,27 +177,29 @@ GET <a href="employee">/employee</a>
 	ready(function(){
 		employeeListGrid.placeAt("employeeGrid")
 		employeeListGrid.startup()
-		on(registry.byId("employeeForm_submit"), "click", function(){
+		on(registry.byId("employeeForm"), "submit", function(){
 			if(registry.byId("employeeForm").validate()){
+				var employee ={}
 				employee.id=registry.byId("employeeForm_id").get("value")
 				employee.name=registry.byId("employeeForm_name").get("value")
 				employee.surname=registry.byId("employeeForm_surname").get("value")
 				employee.position=registry.byId("employeeForm_position").get("value")
 				employee.login=registry.byId("employeeForm_login").get("value")
-												
-				employeeStore.put(employee).then(function(){
-					alert(1)
-				})
-			}	
-			alert(2)
+				console.log("employee.id->",employee.id)
+				if(employee.id!=""){
+					console.log("PUT")
+					employeeStore.put(employee)
+				}else{
+					delete employee.id 
+					console.log("POST")
+					employeeStore.add(employee)		
+				}
+				createUpdateEmployeeDialog.hide()
+			}
 			return false
 		})
 	})
-		
-	addEmployeeDialog.addChild(employeeFormWidget)
+	createUpdateEmployeeDialog.addChild(employeeFormWidget)
 })
-	
-	
-	
 </script>
 </html>

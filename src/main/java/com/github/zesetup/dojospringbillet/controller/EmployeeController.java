@@ -26,8 +26,7 @@ public class EmployeeController {
 
 	@Inject
     private EmployeeService employeeService;
-	
-	
+
 	@RequestMapping( value = "employee", method = RequestMethod.GET)
 	public ResponseEntity<List<Employee>> showEmployeesJson(
 			@RequestParam(value="sort", required=false) String sort,
@@ -44,12 +43,12 @@ public class EmployeeController {
 			limit  = Integer.valueOf(rangeString.substring(rangeString.indexOf("-")+1, rangeString.length()));
 			limit = limit-offset+1;
 		}
-		headers.set("Content-Range", "items="+offset+"-"+limit+"/"+employeeService.getTotalCount(fullSearch)+"");
+		Long count  =employeeService.getTotalCount(fullSearch);
+		headers.set("Content-Range", "items="+offset+"-"+limit+"/"+count+"");
 		if(sort!=null) {
 			sort = sort.trim();
 		}
-
-		logger.info("sort="+sort+" range="+rangeString+" totalCount="+employeeService.getTotalCount(fullSearch)+" offset="+offset+" limit="+limit
+		logger.info("sort="+sort+" range="+rangeString+" totalCount="+count+" offset="+offset+" limit="+limit
 				+" fullSearch="+fullSearch);
 		return new ResponseEntity<>(this.employeeService.load(sort, offset, limit, fullSearch), headers, HttpStatus.OK);
 	}
