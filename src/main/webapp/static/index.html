@@ -164,14 +164,13 @@ GET <a href="employee">/employee</a>
 									  gridxAllModules.Pagination,
 									  "gridx/modules/Bar",
 									  "gridx/modules/Filter",
-									  "gridx/modules/filter/QuickFilter",
 									  "gridx/modules/CellWidget"
 								],
 			                      barBottom: [
 			                                  {pluginClass: "gridx/support/LinkSizer", style: 'text-align: left;'},
 			                                  {pluginClass: "gridx/support/LinkPager", style: 'text-align: right;'},		                                  
 			                                  ],
-			                                  barTop:[addEmployeeButton]
+			                                  barTop:[addEmployeeButton,{pluginClass:"gridx/support/QuickFilter", style:"text-align:right"}]
 
 		})
 	ready(function(){

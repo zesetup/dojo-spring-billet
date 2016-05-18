@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.github.zesetup.dojospringbillet.Loader;
 import com.github.zesetup.dojospringbillet.model.*;
 
 @Repository
@@ -57,7 +56,6 @@ public class EmployeeDao {
 		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );
 		Root<Employee> EmployeeRoot = criteriaQuery.from( Employee.class );
 		criteriaQuery.where( criteriaBuilder.equal( EmployeeRoot.get("login"), login ) );
-		
 		criteriaQuery.select( EmployeeRoot );
 		TypedQuery<Employee> typedQuery = entityManager.createQuery( criteriaQuery );
 		List<Employee> result = typedQuery.getResultList();;
@@ -71,20 +69,9 @@ public class EmployeeDao {
 	public List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );							
-		Root<Employee> EmployeeRoot = criteriaQuery.from( Employee.class );
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		if(fullSearch!=null) {			
-			Predicate predicate = criteriaBuilder.like(
-					criteriaBuilder.upper(EmployeeRoot.<String>get("name")), 
-					"%"+fullSearch.toUpperCase()+"%");
-			Predicate  predicate2 = criteriaBuilder.like(
-					criteriaBuilder.upper(EmployeeRoot.<String>get("surname")), 
-					"%"+fullSearch.toUpperCase()+"%");
-			predicate = criteriaBuilder.or(predicate, predicate2);
-			predicateList.add(predicate);
-			Predicate[] predicates = new Predicate[predicateList.size()];
-		    predicateList.toArray(predicates);
-		    criteriaQuery.where(predicates);
+		Root<Employee> employeeRoot = criteriaQuery.from( Employee.class );
+		if(fullSearch!=null) {
+			criteriaQuery.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQuery, employeeRoot));
 		}
 		TypedQuery<Employee> typedQuery = entityManager.createQuery( criteriaQuery );
 		if((recordsOffset!=null) && (recordsLimit!=null)) {
@@ -100,24 +87,35 @@ public class EmployeeDao {
 		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );									
 		CriteriaQuery<Long> criteriaQueryCount = criteriaBuilder.createQuery( Long.class );							
 		criteriaQueryCount.select(criteriaBuilder.count(criteriaQueryCount.from(Employee.class)));
-		Root<Employee> EmployeeRoot = criteriaQuery.from( Employee.class );
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		if(fullSearch!=null) {			
-			Predicate predicate = criteriaBuilder.like(
-					criteriaBuilder.upper(EmployeeRoot.<String>get("name")), 
-					"%"+fullSearch.toUpperCase()+"%");
-			Predicate  predicate2 = criteriaBuilder.like(
-					criteriaBuilder.upper(EmployeeRoot.<String>get("surname")), 
-					"%"+fullSearch.toUpperCase()+"%");
-			predicate = criteriaBuilder.or(predicate, predicate2);
-			predicateList.add(predicate);
-			Predicate[] predicates = new Predicate[predicateList.size()];
-		    predicateList.toArray(predicates);
-		    criteriaQueryCount.where(predicates);
+		Root<Employee> employeeRoot = criteriaQuery.from( Employee.class );
+		if(fullSearch!=null) {
+			criteriaQueryCount.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQuery, employeeRoot));
 		}
 		entityManager.createQuery( criteriaQuery );
 		Long count = entityManager.createQuery(criteriaQueryCount).getSingleResult();
 		logger.info("** count:"+count);
 		return count;
+	}
+	
+	
+	private Predicate[]  fullSearchToPredicates(
+			String fullSearch,
+			CriteriaBuilder criteriaBuilder,
+			CriteriaQuery<Employee> criteriaQuery,
+			Root<Employee> employeeRoot
+			){									
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+			
+		Predicate predicate = criteriaBuilder.like(
+				criteriaBuilder.upper(employeeRoot.<String>get("name")), 
+				"%"+fullSearch.toUpperCase()+"%");
+		Predicate  predicate2 = criteriaBuilder.like(
+				criteriaBuilder.upper(employeeRoot.<String>get("surname")), 
+				"%"+fullSearch.toUpperCase()+"%");
+		predicate = criteriaBuilder.or(predicate, predicate2);
+		predicateList.add(predicate);
+		Predicate[] predicates = new Predicate[predicateList.size()];
+	    predicateList.toArray(predicates);
+	    return predicates;
 	}
 }
