@@ -26,13 +26,12 @@ public class EmployeeController {
 
 	@Inject
     private EmployeeService employeeService;
-
 	@RequestMapping( value = "employee", method = RequestMethod.GET)
-	public ResponseEntity<List<Employee>> showEmployeesJson(
+	public	ResponseEntity<List<Employee>> showEmployeesJson(
 			@RequestParam(value="sort", required=false) String sort,
 			@RequestParam(value="fullSearch", required=false) String fullSearch,
 			@RequestHeader(value="Range", required=false) String rangeString)	 		
-					throws URISyntaxException {
+			throws URISyntaxException {
 		Integer offset= 0, limit= 0;
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept-Ranges", "items");
@@ -58,7 +57,6 @@ public class EmployeeController {
 		Employee employee = employeeService.get(employeeId);
 		return employee;
 	}
-	
 	@RequestMapping( value = "employee", method = RequestMethod.POST)
 	public ResponseEntity<String> createEmployee(@RequestBody Employee empl){
 		Employee employeeForCheck = employeeService.get(empl.getLogin());

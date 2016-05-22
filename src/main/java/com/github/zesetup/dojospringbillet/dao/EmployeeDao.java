@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.jpa.criteria.compile.CriteriaQueryTypeQueryAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -82,30 +83,13 @@ public class EmployeeDao {
 		return result;
 	}
 	
-	public Long getTotalCount(String fullSearch) {
-		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );									
-		CriteriaQuery<Long> criteriaQueryCount = criteriaBuilder.createQuery( Long.class );							
-		criteriaQueryCount.select(criteriaBuilder.count(criteriaQueryCount.from(Employee.class)));
-		Root<Employee> employeeRoot = criteriaQuery.from( Employee.class );
-		if(fullSearch!=null) {
-			criteriaQueryCount.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQuery, employeeRoot));
-		}
-		entityManager.createQuery( criteriaQuery );
-		Long count = entityManager.createQuery(criteriaQueryCount).getSingleResult();
-		logger.info("** count:"+count);
-		return count;
-	}
-	
-	
 	private Predicate[]  fullSearchToPredicates(
 			String fullSearch,
 			CriteriaBuilder criteriaBuilder,
-			CriteriaQuery<Employee> criteriaQuery,
+			CriteriaQuery criteriaQuery,
 			Root<Employee> employeeRoot
 			){									
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-			
+		List<Predicate> predicateList = new ArrayList<Predicate>();	
 		Predicate predicate = criteriaBuilder.like(
 				criteriaBuilder.upper(employeeRoot.<String>get("name")), 
 				"%"+fullSearch.toUpperCase()+"%");
@@ -117,5 +101,19 @@ public class EmployeeDao {
 		Predicate[] predicates = new Predicate[predicateList.size()];
 	    predicateList.toArray(predicates);
 	    return predicates;
+	}
+
+		
+	public Long getTotalCount(String fullSearch) {
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQueryCount = criteriaBuilder.createQuery( Long.class );							
+		Root<Employee> employeeRoot = criteriaQueryCount.from(Employee.class);
+		criteriaQueryCount.select(criteriaBuilder.countDistinct(employeeRoot));
+		if(fullSearch!=null) {
+			criteriaQueryCount.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQueryCount, employeeRoot));
+		}
+		Long count = entityManager.createQuery(criteriaQueryCount).getSingleResult();
+		logger.info("** DEV count:"+count);
+		return count;
 	}
 }

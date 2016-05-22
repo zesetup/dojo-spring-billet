@@ -17,8 +17,7 @@ import com.github.zesetup.dojospringbillet.model.Employee;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EmployeeDaoTest {
 	@Inject
-	EmployeeDao employeeDao;
-	
+	EmployeeDao employeeDao;	
 	@Test
 	@Transactional
 	public void get() {
