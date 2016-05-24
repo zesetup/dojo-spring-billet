@@ -39,10 +39,12 @@
 	</style>        
 </style>
 <script src="static/js/dojo/dojo.js"  data-dojo-config="async: true"></script>
-<body class='claro'>
-Employee REST service<br/>
-GET <a href="employee">/employee</a>
-<div id="employeeGrid"></div>
+<body class='claro' style="font-size:1em">
+<br/>
+	Employee REST service<br/>
+	GET <a href="employee">/employee</a>
+	<br/><br/><br/>
+	<div id="employeeGrid"></div>
 </body>
 <script>
 	require([
@@ -94,7 +96,7 @@ GET <a href="employee">/employee</a>
 	var createUpdateEmployeeDialog= new dijit.Dialog({
 			title: "Employee",
 			content: "",
-			style:"width:350px;background:white"
+			style:"width:450px;background:white"
 		})
 			
 	var employeeListGrid = new Gridx({        	 

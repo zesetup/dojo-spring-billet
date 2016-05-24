@@ -33,7 +33,7 @@ public class Employee {
 
 	@Column(name = "position", nullable = false, length = 64)
 	@JsonView(JsonViews.EmployeesList.class)
-	private String position;
+	private String position; 
 
 	@JsonView(JsonViews.EmployeesList.class)
 	@Column(name = "isActive")
@@ -42,6 +42,7 @@ public class Employee {
 	@JsonView(JsonViews.EmployeesList.class)
 	@Column(name = "notes", unique = false,  nullable = true, length = 256)
 	private String notes;
+	
 
 	public Employee(){
 		this.employeeId = UUID.randomUUID().toString();
