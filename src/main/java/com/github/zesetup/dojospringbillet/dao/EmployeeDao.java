@@ -80,13 +80,14 @@ public class EmployeeDao {
 			typedQuery.setMaxResults(recordsLimit);
 		}
 		List<Employee> result = typedQuery.getResultList();		
+		logger.info("** DEV result size:"+result.size());
 		return result;
 	}
 	
 	private Predicate[]  fullSearchToPredicates(
 			String fullSearch,
 			CriteriaBuilder criteriaBuilder,
-			CriteriaQuery criteriaQuery,
+			CriteriaQuery<?> criteriaQuery,
 			Root<Employee> employeeRoot
 			){									
 		List<Predicate> predicateList = new ArrayList<Predicate>();	
