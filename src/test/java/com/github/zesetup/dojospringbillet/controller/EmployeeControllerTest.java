@@ -1,86 +1,67 @@
 package com.github.zesetup.dojospringbillet.controller;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/servlet-context.xml")
 @WebAppConfiguration
 public class EmployeeControllerTest {
-
 	@Inject
-	WebApplicationContext webApplicationContext;
-	@Inject 
-	MockHttpSession session;
-    @Inject
-    MockHttpServletRequest request;
-    
+	private WebApplicationContext wac;
+
 	private MockMvc mockMvc;
-	
-	 @Before
-	 public void setup() throws Exception {
-		    this.mockMvc = webAppContextSetup(webApplicationContext).build();
-	 }
-	
-	@Test
-	public void testShowEmployeesJson() throws Exception {
-		this.mockMvc.perform(get("/employee")).andExpect(status().isOk());
-		 //.andExpect(jsonPath("$.employee", hasSize(2))) ;
-	}
-/*        .andExpect(content().contentType(contentType))
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0].id", is(this.bookmarkList.get(0).getId().intValue())))
-        .andExpect(jsonPath("$[0].uri", is("http://bookmark.com/1/" + userName)))
-        .andExpect(jsonPath("$[0].description", is("A description")))
-        .andExpect(jsonPath("$[1].id", is(this.bookmarkList.get(1).getId().intValue())))
-        .andExpect(jsonPath("$[1].uri", is("http://bookmark.com/2/" + userName)))
-        .andExpect(jsonPath("$[1].description", is("A description")));
 
-	/*
-	@Test
-	public void testGetEmployee() {
-		fail("Not yet implemented");
+	@Before
+	public void setup () {
+		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
+		this.mockMvc = builder.build();
 	}
 
 	@Test
-	public void testCreateEmployee() {
-		fail("Not yet implemented");
+	public void testUserController () throws Exception {
+
+		// create one more user
+		 MockHttpServletRequestBuilder  builder = MockMvcRequestBuilders.post("/employee")
+										 .contentType(MediaType.APPLICATION_JSON)
+										 .content(createEmployeeInJson("login1",
+																   "name1",
+																   "surname1",
+																   "position1"));
+ 
+		this.mockMvc.perform(builder)
+					.andExpect(MockMvcResultMatchers.status()
+													.isCreated());
+
+		// get all users
+		builder = MockMvcRequestBuilders.get("/employee")
+										.accept(MediaType.APPLICATION_JSON);
+		this.mockMvc.perform(builder)
+					.andExpect(MockMvcResultMatchers.status()
+													.isOk())
+					.andDo(MockMvcResultHandlers.print());
+
 	}
 
-	@Test
-	public void testUpdateEmployee() {
-		fail("Not yet implemented");
+	private static String createEmployeeInJson (String login, String name, String surname, String position) {
+		return "{ \"login\": \"" + login + "\", " 
+				+ "\"name\": \"" + name + "\", " 
+				+ "\"surname\":\"" + surname + "\"," 
+				+ "\"position\":\"" + position + "\"}";
 	}
-
-	@Test
-	public void testRemoveEmployee() {
-		fail("Not yet implemented");
-	}
-
-	}*/
 }
