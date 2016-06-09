@@ -1,11 +1,17 @@
 package com.github.zesetup.dojospringbillet.controller;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -18,6 +24,12 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.github.zesetup.dojospringbillet.model.Employee;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/servlet-context.xml")
 @WebAppConfiguration
@@ -26,7 +38,10 @@ public class EmployeeControllerTest {
 	private WebApplicationContext wac;
 
 	private MockMvc mockMvc;
-
+/*	private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
+*/
 	@Before
 	public void setup () {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
@@ -35,7 +50,6 @@ public class EmployeeControllerTest {
 
 	@Test
 	public void testUserController () throws Exception {
-
 		// create one more user
 		 MockHttpServletRequestBuilder  builder = MockMvcRequestBuilders.post("/employee")
 										 .contentType(MediaType.APPLICATION_JSON)
@@ -43,11 +57,9 @@ public class EmployeeControllerTest {
 																   "name1",
 																   "surname1",
 																   "position1"));
- 
 		this.mockMvc.perform(builder)
 					.andExpect(MockMvcResultMatchers.status()
 													.isCreated());
-
 		// get all users
 		builder = MockMvcRequestBuilders.get("/employee")
 										.accept(MediaType.APPLICATION_JSON);
@@ -55,13 +67,27 @@ public class EmployeeControllerTest {
 					.andExpect(MockMvcResultMatchers.status()
 													.isOk())
 					.andDo(MockMvcResultHandlers.print());
-
 	}
 
-	private static String createEmployeeInJson (String login, String name, String surname, String position) {
+	private  String createEmployeeInJson (String login, String name, String surname, String position) throws HttpMessageNotWritableException, IOException {
+		Employee e = new Employee("login1", "name1", "surname1", "position1");
+		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter =  jacksonConverter();
+		MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        mappingJackson2HttpMessageConverter.write(
+                e, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+         System.out.println("*** JSON:"+mockHttpOutputMessage.getBodyAsString());
+		return mockHttpOutputMessage.getBodyAsString();
+		/*
 		return "{ \"login\": \"" + login + "\", " 
 				+ "\"name\": \"" + name + "\", " 
 				+ "\"surname\":\"" + surname + "\"," 
-				+ "\"position\":\"" + position + "\"}";
+				+ "\"position\":\"" + position + "\"}";*/
 	}
+	
+	 private  MappingJackson2HttpMessageConverter jacksonConverter() {
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+	        converter.setObjectMapper(objectMapper);
+	        return converter;
+	    }
 }
