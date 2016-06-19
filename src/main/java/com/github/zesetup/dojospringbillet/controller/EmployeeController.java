@@ -61,30 +61,29 @@ public class EmployeeController {
 	
 	@RequestMapping( value = "employee", method = RequestMethod.POST)
 	public ResponseEntity<String> createEmployee(@RequestBody Employee empl){
-		Employee employeeForCheck = employeeService.get(empl.getLogin());
-		
-		if( employeeForCheck != null) {
+		try{
+			employeeService.insertEmployee(empl);
+			return new ResponseEntity<String>(HttpStatus.CREATED);
+		}catch(Exception e){
+			logger.warn(e.getMessage());
 			return new ResponseEntity<String>(HttpStatus.CONFLICT);
 		}
-		employeeService.insertEmployee(empl);
-		return new ResponseEntity<String>(HttpStatus.CREATED);
 	}
 	
 	@RequestMapping( value = "employee/{employeeId}", method = RequestMethod.PUT)
 	public ResponseEntity<String> updateEmployee(@PathVariable String employeeId, @RequestBody Employee employeeParam){
-		Employee employeeForCheck = employeeService.get(employeeParam.getLogin());
-		if(employeeForCheck!=null) {
-			if( (!employeeForCheck.getId().equals(employeeId)) && (employeeForCheck.getLogin().equals(employeeParam.getLogin()))) {
-				return new ResponseEntity<String>(HttpStatus.CONFLICT);
-			}
-		}
 		Employee employee = employeeService.get(employeeId);
 		employee.setName(employeeParam.getName());
 		employee.setSurname(employeeParam.getSurname());
 		employee.setPosition(employeeParam.getPosition());
 		employee.setLogin(employeeParam.getLogin());
-		employeeService.update(employee);
-		return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+		try{
+			employeeService.update(employee);
+			return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+		}catch(Exception e){
+			logger.warn(e.getMessage());
+			return new ResponseEntity<String>(HttpStatus.CONFLICT);	
+		}
 	}
 	@RequestMapping( value = "employee/{employeeId}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> removeEmployee(@PathVariable String employeeId){

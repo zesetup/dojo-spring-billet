@@ -16,6 +16,7 @@ import org.hibernate.jpa.criteria.compile.CriteriaQueryTypeQueryAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.zesetup.dojospringbillet.model.*;
 
@@ -52,6 +53,8 @@ public class EmployeeDao {
 		return e;
 	}
 	
+	
+	@Transactional(readOnly = true)
 	public Employee getByLogin(String login) {		
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );
@@ -66,7 +69,8 @@ public class EmployeeDao {
 			return null;
 		}
 	}
-	 
+	
+	@Transactional(readOnly = true)
 	public List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery( Employee.class );							
@@ -104,7 +108,7 @@ public class EmployeeDao {
 	    return predicates;
 	}
 
-		
+	@Transactional(readOnly = true)
 	public Long getTotalCount(String fullSearch) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQueryCount = criteriaBuilder.createQuery( Long.class );							
