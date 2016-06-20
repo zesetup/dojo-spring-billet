@@ -7,8 +7,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.zesetup.dojospringbillet.Loader;
+import com.github.zesetup.dojospringbillet.dao.EmployeeDao;
 import com.github.zesetup.dojospringbillet.model.Employee;
 import com.github.zesetup.dojospringbillet.service.EmployeeService;
 
@@ -27,13 +31,13 @@ import com.github.zesetup.dojospringbillet.service.EmployeeService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class EmployeeServiceImplTest {
-	@Inject
-//	@InjectMocks
-	EmployeeService employeeService;
-	
+
+	@InjectMocks
+	EmployeeServiceImpl employeeServiceImpl;
 	
 	@Mock
-	EmployeeService mockEmployeeService;
+	EmployeeDao employeeDaoMock;
+	
 	private static final Logger logger = LoggerFactory.getLogger(Loader.class);
 
 	@Before
@@ -41,7 +45,7 @@ public class EmployeeServiceImplTest {
         MockitoAnnotations.initMocks(this);
     }
 	
-	/*	
+	/*
 	@Test
 	public void testDelete(){
 		Employee employee  = new Employee("john", "John123", "Connor", "Engineer");
@@ -61,31 +65,21 @@ public class EmployeeServiceImplTest {
 		assertEquals(employee.getId(), "43");
 	}
 */
-	@Test
-	public void testCreate() {
-		Employee employee  = new Employee("john1", "John", "Connor", "Engineer");
-		try{
-			employeeService.insertEmployee(employee);
-		} catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	
+
 	@Test(expected = Exception.class) 
 	public void testDisallowCreteDublicateLogin() throws Exception {
-		Employee employee  = new Employee("john2", "John", "Connor", "Engineer");
-		Employee employee2  = new Employee("john2", "John2", "Connor2", "Engineer");
-		employeeService.insertEmployee(employee);
-		employeeService.insertEmployee(employee2);
+		Employee employee  = Mockito.mock(Employee.class);
+		Mockito.doReturn("john2").when(employee).getLogin();
+		Mockito.doReturn(employee).when(employeeDaoMock).getByLogin("john2");		
+		employeeServiceImpl.insertEmployee(employee);
 	}
+
 	
 	@Test(expected = Exception.class) 
 	public void testDisallowUpdateDublicateLogin() throws Exception {
-		Employee employee  = new Employee("john3", "John", "Connor", "Engineer");
-		Employee employee2  = new Employee("john4", "John2", "Connor2", "Engineer");
-		employeeService.insertEmployee(employee);
-		employeeService.insertEmployee(employee2);
-		employee2.setLogin("john3");
-		employeeService.update(employee2);
+		Employee employee  = Mockito.mock(Employee.class);
+		Mockito.doReturn("john2").when(employee).getLogin();
+		Mockito.doReturn(employee).when(employeeDaoMock).getByLogin("john2");		
+		employeeServiceImpl.update(employee);
 	}
 }
