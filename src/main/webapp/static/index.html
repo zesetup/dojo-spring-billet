@@ -5,11 +5,6 @@
 <title>Spring + Dojo</title>
 </head>
 <style type="text/css">
-	/*Use claro theme.*/
-	@import "static/js/dijit/themes/claro/claro.css";
-	@import "static/js/dijit/themes/claro/document.css";
-	/*Import the main CSS file of Gridx.*/
-	@import "static/js/gridx/resources/claro/Gridx.css";
 	<style>
 	fieldset
 	{ 
@@ -38,36 +33,42 @@
 	}
 	</style>        
 </style>
-<script src="static/js/dojo/dojo.js"  data-dojo-config="async: true"></script>
-<body class='claro' style="font-size:1em">
-<br/>
-	Employee REST service<br/>
-	GET <a href="employee">/employee</a>
-	<br/><br/><br/>
-	<div id="employeeGrid"></div>
-</body>
+
+<script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/dojo/1.10.1/dojo/dojo.js' data-dojo-config="async: true, parseOnLoad: true"></script>
+ <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.1/dijit/themes/claro/claro.css">
+ <link rel="stylesheet" type="text/css" href="http://cdn.rawgit.com/oria/gridx/1.3/resources/claro/Gridx.css">
+ <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.1/dijit/themes/claro/document.css">
+
+
 <script>
-	require([
-	'dojo/dom',
-	'dojo/dom-construct',
-	'dojo/ready',
-	'dojo/store/JsonRest', 
-	'dojo/_base/declare',
-	"dojo/on",
-	"dojo/dom-form",
-	"dijit/registry",
-    "dijit/form/Form", 
-    "dijit/form/Button",
-    "dijit/form/ValidationTextBox",
-	"dijit/_WidgetBase",
-    "dijit/_TemplatedMixin",
-    "dijit/_WidgetsInTemplateMixin",
-    "dijit/form/_FormWidget",
-    "dijit/ConfirmDialog",
-	'gridx/Grid',
-	'gridx/allModules',
-	"dojo/text!./static/templates/employeeForm.html"
-	], function (dom, domConstruct, ready, JsonRest, declare, on, domForm,  
+	require({
+		packages:[
+            {
+                name: "gridx",
+                location: "//cdn.rawgit.com/oria/gridx/1.3"
+        	}
+			]
+        },
+		['dojo/dom',
+		'dojo/dom-construct',
+		'dojo/ready',
+		'dojo/store/JsonRest', 
+		'dojo/_base/declare',
+		"dojo/on",
+		"dojo/dom-form",
+		"dijit/registry",
+	    "dijit/form/Form", 
+	    "dijit/form/Button",
+	    "dijit/form/ValidationTextBox",
+		"dijit/_WidgetBase",
+	    "dijit/_TemplatedMixin",
+	    "dijit/_WidgetsInTemplateMixin",
+	    "dijit/form/_FormWidget",
+	    "dijit/ConfirmDialog",
+		'gridx/Grid',
+		'gridx/allModules',
+		"dojo/text!./static/templates/employeeForm.html"]
+	,function (dom, domConstruct, ready, JsonRest, declare, on, domForm,  
 			registry, Form, Button, ValidationTextBox, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _FormWidget,ConfirmDialog,   
 			Gridx, gridxAllModules, employeeFormWidgetTemplate) {
 	var employeeStore =	new JsonRest({target:"employee",sortParam:"sort"})
@@ -203,4 +204,14 @@
 	createUpdateEmployeeDialog.addChild(employeeFormWidget)
 })
 </script>
+<body class='claro' style="font-size:1em">
+
+
+<br/>
+	Employee REST service<br/>
+	GET <a href="employee">/employee</a>
+	<br/><br/><br/>
+	<div id="employeeGrid"></div>
+</body>
+
 </html>
