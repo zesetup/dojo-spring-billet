@@ -17,7 +17,7 @@ public class Employee {
 	}
 	@Id
 	@Column(name = "employeeId", unique = true,  nullable = false, length = 36)
-	private String employeeId;	
+	public String employeeId;	
 
 	@JsonView(JsonViews.EmployeesList.class)
 	@Column(name = "login", unique = true, nullable = true, length = 32)

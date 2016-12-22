@@ -4,6 +4,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
@@ -44,6 +45,7 @@ public class EmployeeControllerTest {
 		this.mockMvc = builder.build();
 	}
 
+	@Ignore
 	@Test
 	public void testUserController () throws Exception {
 		// create one more employee

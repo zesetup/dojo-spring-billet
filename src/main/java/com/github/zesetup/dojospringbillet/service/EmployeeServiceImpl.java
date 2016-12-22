@@ -5,8 +5,9 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	public void update(Employee employee) throws Exception {
+	@CachePut(value="employeeCache", key="#employee.employeeId")
+	public Employee update(Employee employee) throws Exception {
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
 			if( (!employeeForCheck.getId().equals(employee.getId())) && (employeeForCheck.getLogin().equals(employee.getLogin()))) {
@@ -44,9 +46,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 			}
 		}
 		employeeDao.update(employee);
+		return employee;
 	}
 
 	@Override
+	@Cacheable(value="employeeCache")
 	public List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch) {
 		List<Employee> l =  employeeDao.load(sortField, recordsOffset, recordsLimit,  fullSearch);
 		return l;
@@ -70,6 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
+	@CacheEvict(value="employeeCache", key="#id")
 	public void remove(String id) {
 		employeeDao.remove(id);
 	}
