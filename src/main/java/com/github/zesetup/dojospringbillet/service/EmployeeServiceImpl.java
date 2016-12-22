@@ -53,8 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-//	@CachePut(value="employeeCache", key="#id")
-//	@CacheEvict(value="employeeCache", key="#id")
+	//@CachePut(value="employeeCache", key="#employee.Id")
 	public Employee update(Employee employee) throws Exception {
 		
 		
@@ -65,6 +64,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 			}
 		}
 		employeeDao.update(employee);
+		/**/
 		Ehcache    cache = ( (EhCacheCache) cacheManager.getCache("employeeCache")).getNativeCache();;
 		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
 	    for (Element element : elements.values()) {
@@ -79,6 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	    		}
 	    	}
 	    }
+	    /**/
 		logger.info(">>> employee updated");
 		return employee;
 	}
@@ -113,7 +114,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 	public Employee remove(String id) {
 		Employee e =  employeeDao.get(id);
 		employeeDao.remove(id);
-		logger.info("id to remove:"+e.employeeId);
 		return e;
 	}
 }

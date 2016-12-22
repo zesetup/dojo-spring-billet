@@ -17,7 +17,7 @@ public class Employee {
 	}
 	@Id
 	@Column(name = "employeeId", unique = true,  nullable = false, length = 36)
-	public String employeeId;	
+	private String employeeId;	
 
 	@JsonView(JsonViews.EmployeesList.class)
 	@Column(name = "login", unique = true, nullable = true, length = 32)
@@ -102,5 +102,9 @@ public class Employee {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+	@Override
+	public String  toString() {
+		return "\nlogin: "+login+"\nname: " +name+"\nsurname: "+surname+"\nnotes: "+notes;
 	}
 }
