@@ -190,7 +190,11 @@
 				console.log("employee.id->",employee.id)
 				if(employee.id!=""){
 					console.log("PUT")
-					employeeStore.put(employee)
+					employeeStore.put(employee).then(function(){
+						employeeListGrid.model.clearCache()
+						employeeListGrid.body.refresh()
+						
+					})
 				}else{
 					delete employee.id 
 					console.log("POST")

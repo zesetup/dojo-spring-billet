@@ -8,7 +8,7 @@ import com.github.zesetup.dojospringbillet.model.*;
 public interface EmployeeService {
 	void insertEmployee(Employee employee) throws Exception;
 	Employee update(Employee employee) throws Exception;
-	void remove(String employeeId);
+	Employee remove(String employeeId);
 	List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch);
 	Employee get(String employeeId);
 	Employee getByLogin(String login);

@@ -1,6 +1,13 @@
 package com.github.zesetup.dojospringbillet.service;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+
+import javax.annotation.Resource;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -8,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +24,21 @@ import com.github.zesetup.dojospringbillet.controller.EmployeeController;
 import com.github.zesetup.dojospringbillet.dao.EmployeeDao;
 import com.github.zesetup.dojospringbillet.model.Employee;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 @Component
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService{
 
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
-
+	
+	@Resource(name="cacheManager")
+    private EhCacheCacheManager cacheManager;
+	
 	@Inject
 	private EmployeeDao employeeDao;
+	
 
 	@Override
 	@Transactional
@@ -37,8 +53,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	@CachePut(value="employeeCache", key="#employee.employeeId")
+//	@CachePut(value="employeeCache", key="#id")
+//	@CacheEvict(value="employeeCache", key="#id")
 	public Employee update(Employee employee) throws Exception {
+		
+		
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
 			if( (!employeeForCheck.getId().equals(employee.getId())) && (employeeForCheck.getLogin().equals(employee.getLogin()))) {
@@ -46,12 +65,28 @@ public class EmployeeServiceImpl implements EmployeeService{
 			}
 		}
 		employeeDao.update(employee);
+		Ehcache    cache = ( (EhCacheCache) cacheManager.getCache("employeeCache")).getNativeCache();;
+		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
+	    for (Element element : elements.values()) {
+	    	ArrayList empList = (ArrayList) element.getObjectValue();
+	    	for(int i=0; i<empList.size(); i++) {
+	    		Employee e = (Employee) empList.get(i);
+	    		if(e.getId().equals(employee.getId())) {
+	    			logger.info("found Employee to update: "+e.getLogin());
+	    			empList.set(i, employee);
+	    			cache.put(new Element(element.getKey(), element.getValue()));
+	    			break;
+	    		}
+	    	}
+	    }
+		logger.info(">>> employee updated");
 		return employee;
 	}
 
 	@Override
 	@Cacheable(value="employeeCache")
 	public List<Employee> load(String sortField, Integer recordsOffset, Integer recordsLimit,  String fullSearch) {
+		logger.info(">>> load employees fired");
 		List<Employee> l =  employeeDao.load(sortField, recordsOffset, recordsLimit,  fullSearch);
 		return l;
 	}
@@ -75,7 +110,10 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	@Override
 	@CacheEvict(value="employeeCache", key="#id")
-	public void remove(String id) {
+	public Employee remove(String id) {
+		Employee e =  employeeDao.get(id);
 		employeeDao.remove(id);
+		logger.info("id to remove:"+e.employeeId);
+		return e;
 	}
 }

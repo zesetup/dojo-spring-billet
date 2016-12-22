@@ -84,7 +84,7 @@ public class EmployeeDao {
 			typedQuery.setMaxResults(recordsLimit);
 		}
 		List<Employee> result = typedQuery.getResultList();		
-		logger.info("** DEV result size:"+result.size());
+		//logger.info("** DEV result size:"+result.size());
 		return result;
 	}
 	
@@ -118,7 +118,7 @@ public class EmployeeDao {
 			criteriaQueryCount.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQueryCount, employeeRoot));
 		}
 		Long count = entityManager.createQuery(criteriaQueryCount).getSingleResult();
-		logger.info("** DEV count:"+count);
+		//logger.info("** DEV count:"+count);
 		return count;
 	}
 }
