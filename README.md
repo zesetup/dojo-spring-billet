@@ -13,6 +13,11 @@
 
 ## Access from Web-browser
 
+Application URL:
+
+http://%your_server_host%/dojo-spring-billet/
+
+
 REST GET from service:
 
 http://%your_server_host%/dojo-spring-billet/employee
