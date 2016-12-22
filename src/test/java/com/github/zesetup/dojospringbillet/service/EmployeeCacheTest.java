@@ -1,7 +1,11 @@
 package com.github.zesetup.dojospringbillet.service;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +19,14 @@ import net.sf.ehcache.Element;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/servlet-context.xml")
-public class MyTest {
+public class EmployeeCacheTest {
 
 	@Autowired
 	EmployeeServiceImpl es;
 
 	@Autowired
 	CacheManager cm;
-
+	@Ignore
 	@Test
 	public void t1() throws Exception {
 		List<Employee> list;
@@ -58,7 +62,7 @@ public class MyTest {
 		e = es.getByLogin("login");
 		System.out.println("getByLogin");
 		System.out.println(e);
-		e.setNotes("NEW notes");
+		e.setNotes("NEWnotes");
 		e = es.update(e);
 		System.out.println("update");
 		System.out.println(e);
@@ -71,10 +75,37 @@ public class MyTest {
 
 		System.out.println("run load twice");
 		list = es.load(null, null, null, null);
-		System.out.println(list);
+		//System.out.println(list);
 
 		list = es.load(null, null, null, null);
-		System.out.println(list);
+		//System.out.println(list);
+		Employee updatedEmployee = null;
+		for(Employee employee:list){
+			if(employee.getNotes().equals("NEWnotes")){
+				updatedEmployee = employee;
+				break;
+			}
+		}
+		assertNotNull(updatedEmployee);
 	}
-
+	@Test
+	public void testChacheInsert() throws Exception {
+		List<Employee> list = new ArrayList<Employee>();
+		Employee e1 = new Employee("login1","name1", "surname1", "pos1");
+		es.insertEmployee(e1);
+		// caching
+		list = es.load(null, null, null, null);
+		Employee e2 = new Employee("login2","name2", "surname2", "pos2");
+		es.insertEmployee(e2);
+		// second load
+		list = es.load(null, null, null, null);
+		Employee foundEmployee = null;
+		for(Employee employee:list){
+			if(employee.getLogin().equals("login2")){
+				foundEmployee = employee;
+				break;
+			}
+		}
+		assertNotNull(foundEmployee);
+	}
 }

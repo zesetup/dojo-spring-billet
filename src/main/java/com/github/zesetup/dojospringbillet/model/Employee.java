@@ -105,6 +105,6 @@ public class Employee {
 	}
 	@Override
 	public String  toString() {
-		return "\nlogin: "+login+"\nname: " +name+"\nsurname: "+surname+"\nnotes: "+notes;
+		return "login: "+login+"; name: " +name+"; surname: "+surname+"; notes: "+notes;
 	}
 }

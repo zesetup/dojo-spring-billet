@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,8 +34,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 	
-	@Resource(name="cacheManager")
-    private EhCacheCacheManager cacheManager;
+	//@Resource(name="cacheManager")
+    //private EhCacheCacheManager cacheManager;
+	
+	@Inject
+	private EhCacheCacheManager cacheManager;
 	
 	@Inject
 	private EmployeeDao employeeDao;
@@ -42,7 +46,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	@Override
 	@Transactional
-	public void insertEmployee(Employee employee) throws Exception {
+	//@CachePut(value="employeeCache", key="#employee.Id")
+	public Employee insertEmployee(Employee employee) throws Exception {
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
 			if( (!employeeForCheck.getId().equals(employee.getId())) && (employeeForCheck.getLogin().equals(employee.getLogin()))) {
@@ -50,13 +55,29 @@ public class EmployeeServiceImpl implements EmployeeService{
 			}
 		}
 		employeeDao.insert(employee);
+		
+		Ehcache    cache = ( (EhCacheCache) cacheManager.getCache("employeeCache")).getNativeCache();;
+		/**/
+		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
+	    for (Element element : elements.values()) {
+	    	ArrayList empList = (ArrayList) element.getObjectValue();
+	    	empList.add(employee);
+	    }
+	    /**/
+/*	    
+		for (Object key : cache.getKeys()) {
+			Element element = cache.get(key);
+			ArrayList empList = (ArrayList) element.getObjectValue();
+			empList.add(employee);
+		}
+	    
+*/
+		return employee;
 	}
 
 	@Override
 	//@CachePut(value="employeeCache", key="#employee.Id")
 	public Employee update(Employee employee) throws Exception {
-		
-		
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
 			if( (!employeeForCheck.getId().equals(employee.getId())) && (employeeForCheck.getLogin().equals(employee.getLogin()))) {
@@ -74,7 +95,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	    		if(e.getId().equals(employee.getId())) {
 	    			logger.info("found Employee to update: "+e.getLogin());
 	    			empList.set(i, employee);
-	    			cache.put(new Element(element.getKey(), element.getValue()));
+	    			cache.put(new Element(element.getObjectKey(), element.getObjectValue()));
 	    			break;
 	    		}
 	    	}
