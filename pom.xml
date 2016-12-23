@@ -147,6 +147,7 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.6.3</version>
 		</dependency>
+		<!-- Ehcache -->
 		<dependency>
 		    <groupId>net.sf.ehcache</groupId>
 		    <artifactId>ehcache</artifactId>

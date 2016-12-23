@@ -1,18 +1,13 @@
 package com.github.zesetup.dojospringbillet.dao;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.hibernate.jpa.criteria.compile.CriteriaQueryTypeQueryAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -78,6 +73,7 @@ public class EmployeeDao {
 		if(fullSearch!=null) {
 			criteriaQuery.where(fullSearchToPredicates(fullSearch, criteriaBuilder, criteriaQuery, employeeRoot));
 		}
+		criteriaQuery.orderBy(criteriaBuilder.asc(employeeRoot.get("employeeId")));
 		TypedQuery<Employee> typedQuery = entityManager.createQuery( criteriaQuery );
 		if((recordsOffset!=null) && (recordsLimit!=null)) {
 			typedQuery.setFirstResult(recordsOffset);

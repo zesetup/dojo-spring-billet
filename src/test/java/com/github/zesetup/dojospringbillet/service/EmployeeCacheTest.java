@@ -26,6 +26,7 @@ public class EmployeeCacheTest {
 
 	@Autowired
 	CacheManager cm;
+	
 	@Ignore
 	@Test
 	public void t1() throws Exception {
@@ -88,6 +89,7 @@ public class EmployeeCacheTest {
 		}
 		assertNotNull(updatedEmployee);
 	}
+	
 	@Test
 	public void testChacheInsert() throws Exception {
 		List<Employee> list = new ArrayList<Employee>();
@@ -103,6 +105,32 @@ public class EmployeeCacheTest {
 		for(Employee employee:list){
 			if(employee.getLogin().equals("login2")){
 				foundEmployee = employee;
+				break;
+			}
+		}
+		assertNotNull(foundEmployee);
+	}
+	@Test
+	public void testChacheUpdate() throws Exception {
+		List<Employee> list = new ArrayList<Employee>();
+		Employee e1 = new Employee("loginU","name1", "surname1", "pos1");
+		es.insertEmployee(e1);
+		// caching
+		list = es.load(null, null, null, null);
+		e1 = es.getByLogin("loginU");
+		e1.setNotes("notesUpdated");
+		System.out.println("e1:"+e1);
+		es.update(e1);
+		// second load
+		list = es.load(null, null, null, null);
+		System.out.println("list:"+list);
+		Employee foundEmployee = null;
+		for(Employee employee:list){
+			System.out.println(employee);
+			if(employee.getLogin().equals("loginU")){
+				if(employee.getNotes().equals("notesUpdated")) {
+					foundEmployee = employee;
+				}
 				break;
 			}
 		}

@@ -42,11 +42,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	
 	@Inject
 	private EmployeeDao employeeDao;
-	
 
 	@Override
 	@Transactional
-	//@CachePut(value="employeeCache", key="#employee.Id")
 	public Employee insertEmployee(Employee employee) throws Exception {
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
@@ -61,7 +59,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
 	    for (Element element : elements.values()) {
 	    	ArrayList empList = (ArrayList) element.getObjectValue();
-	    	empList.add(employee);
+	    	//empList.add(employee);
 	    }
 	    /**/
 /*	    
@@ -76,7 +74,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	//@CachePut(value="employeeCache", key="#employee.Id")
 	public Employee update(Employee employee) throws Exception {
 		Employee employeeForCheck = getByLogin(employee.getLogin());
 		if(employeeForCheck!=null) {
@@ -131,10 +128,26 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	@CacheEvict(value="employeeCache", key="#id")
+	//@CacheEvict(value="employeeCache", key="#id")
 	public Employee remove(String id) {
-		Employee e =  employeeDao.get(id);
+		Employee employee =  employeeDao.get(id);
 		employeeDao.remove(id);
-		return e;
+		Ehcache    cache = ( (EhCacheCache) cacheManager.getCache("employeeCache")).getNativeCache();;
+		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
+	    for (Element element : elements.values()) {
+	    	ArrayList empList = (ArrayList) element.getObjectValue();
+	    	for(int i=0; i<empList.size(); i++) {
+	    		Employee e = (Employee) empList.get(i);
+	    		if(e.getId().equals(employee.getId())) {
+	    			logger.info("found Employee to update: "+e.getLogin());
+	    			empList.remove(i);
+	    			//empList.set(i, employee);
+	    			cache.put(new Element(element.getObjectKey(), element.getObjectValue()));
+	    			break;
+	    		}
+	    	}
+	    }	
+	    
+		return employee;
 	}
 }

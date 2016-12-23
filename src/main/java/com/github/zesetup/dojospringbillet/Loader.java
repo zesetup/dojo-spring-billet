@@ -59,7 +59,7 @@ public class Loader implements ApplicationListener<ContextRefreshedEvent>{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(int i=0; i<0;i++){
+		for(int i=0; i<100;i++){
 			Employee employee = new Employee(
 					"log"+UUID.randomUUID().toString().substring(0, 5), 
 					"Name"+UUID.randomUUID().toString().substring(0, 8), 
