@@ -22,3 +22,7 @@ REST GET from service:
 
 http://%your_server_host%/dojo-spring-billet/employee
 
+
+## Openshift
+
+??? Build Config MAVEN_ARGS: dependency:copy-dependencies -Popenshift  -e
