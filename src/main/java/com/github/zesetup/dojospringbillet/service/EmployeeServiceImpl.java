@@ -59,7 +59,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 		Map<Object, Element>  elements = cache.getAll(cache.getKeys());
 	    for (Element element : elements.values()) {
 	    	ArrayList empList = (ArrayList) element.getObjectValue();
-	    	//empList.add(employee);
+	    	empList.add(employee);
 	    }
 	    /**/
 /*	    
