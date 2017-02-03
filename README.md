@@ -1,4 +1,4 @@
-# dojo-spring-billet
+	# dojo-spring-billet
 
 ## Create package 
 
@@ -26,3 +26,7 @@ http://%your_server_host%/dojo-spring-billet/employee
 ## Openshift
 
 ??? Build Config MAVEN_ARGS: dependency:copy-dependencies -Popenshift  -e
+
+## Live demo
+
+http://104.197.181.44/dojo-spring-billet/
