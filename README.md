@@ -29,4 +29,4 @@ http://%your_server_host%/dojo-spring-billet/employee
 
 ## Live demo
 
-http://104.197.181.44/dojo-spring-billet/
+http://104.197.115.81/dojo-spring-billet/
