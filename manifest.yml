@@ -1,6 +1,6 @@
 applications:
   - name: dojo
     random-route: true
-    memory: 256M
+    memory: 512M
     path: target/dojo-spring-billet.war
     buildpack: java_buildpack
